@@ -72,9 +72,11 @@ class MyQLMDigitalQPU(Core):
         elif isinstance(data, Circuit):
             from qat.interop.openqasm import OqasmParser
             parser = OqasmParser()
-            circ = parser.parse(data.as_qasm_string())
+            adapted_circ = data.as_qasm_string().replace(
+                "qubit", "qreg").replace("bit", "creg")
+            circ = parser.compile(adapted_circ)
             job = circ.to_job(
-                nbshots=self.nbshots, mode="SAMPLE") if self.nbshots is not None else circ.to_job()
+                nbshots=self.nbshots, job_type="SAMPLE") if self.nbshots is not None else circ.to_job()
         else:
             raise NotImplementedError
         self.job = job
@@ -90,6 +92,14 @@ class MyQLMDigitalQPU(Core):
         else:
             assert isinstance(job, Job )
         result = self.getQPU().submit(self.job)
+        if result.has_statevector:
+            return Data(
+                SampleDistribution.from_statevector(
+                    statevector=result.statevector,
+                    n_bits=job.circuit.size,
+                    n_shots=self.nbshots if self.nbshots is not None else 1.0,
+                )
+            )
 
         return Data(
             SampleDistribution.from_list([(sample.state.bitstring, sample.probability) for sample in result])
