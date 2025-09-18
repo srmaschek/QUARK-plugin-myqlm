@@ -1,8 +1,30 @@
+# Copyright (c) 2025 Science + Computing AG / Eviden SE (Atos Group)
+#
+# This file is part of the QUARK benchmarking framework.
+# It provides a wrapper for myQLM (https://myqlm.github.io/).
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+#
+# Contact: stefan-raimund.maschek@eviden.com
+
+
+
 from dataclasses import dataclass
 import importlib
 
 from quark.core import Core, Result, Data
-from quark.interface_types import Other, SampleDistribution
+from quark.interface_types import Other, SampleDistribution, Circuit
 
 from qat.core import Circuit as QaptivaCircuit
 from qat.core import Job
@@ -39,13 +61,20 @@ class MyQLMDigitalQPU(Core):
         Executes the given circuit on the selected myQLM QPU.
         return Data(Other(qat.core.Job))
         """
-        assert (isinstance(data, Other) and isinstance(data.data, QaptivaCircuit))
         if isinstance(data, Other):
+            assert isinstance(data.data, QaptivaCircuit)
+
             circ: QaptivaCircuit = data.data
             if self.nbshots is not None:
                 job = circ.to_job(nbshots=self.nbshots)
             else:
                 job = circ.to_job()
+        elif isinstance(data, Circuit):
+            from qat.interop.openqasm import OqasmParser
+            parser = OqasmParser()
+            circ = parser.parse(data.as_qasm_string())
+            job = circ.to_job(
+                nbshots=self.nbshots, mode="SAMPLE") if self.nbshots is not None else circ.to_job()
         else:
             raise NotImplementedError
         self.job = job
