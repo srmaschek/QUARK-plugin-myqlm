@@ -93,13 +93,7 @@ class MyQLMDigitalQPU(Core):
             assert isinstance(job, Job )
         result = self.getQPU().submit(self.job)
         if result.has_statevector:
-            return Data(
-                SampleDistribution.from_statevector(
-                    statevector=result.statevector,
-                    n_bits=job.circuit.size,
-                    n_shots=self.nbshots if self.nbshots is not None else 1.0,
-                )
-            )
+            return Data(SampleDistribution.from_statevector(result.statevector))
 
         return Data(
             SampleDistribution.from_list([(sample.state.bitstring, sample.probability) for sample in result])
