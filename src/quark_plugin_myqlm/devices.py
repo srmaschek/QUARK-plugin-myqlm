@@ -63,12 +63,8 @@ class MyQLMDigitalQPU(Core):
         """
         if isinstance(data, Other):
             assert isinstance(data.data, QaptivaCircuit)
-
             circ: QaptivaCircuit = data.data
-            if self.nbshots is not None:
-                job = circ.to_job(nbshots=self.nbshots)
-            else:
-                job = circ.to_job()
+            job = circ.to_job(nbshots=self.nbshots) if self.nbshots is not None else circ.to_job()
         elif isinstance(data, Circuit):
             from qat.interop.openqasm import OqasmParser
             parser = OqasmParser()
