@@ -41,7 +41,7 @@ class MyQLMDigitalQPU(Core):
     
     The constructor argument 'nbshots' allows the specification of the number of shots as positive integer. 
     If 'nbshots' is specified the probability distribution for the states will be estimated from the corresponding 
-    relative counts otherwise the probability distribution will be calculated exactly.
+    relative counts. If 'nbshots' is not specified or set to 0 the probability distribution will be calculated exactly.
 
     See also the myQLM Documentation.
     """
@@ -85,7 +85,7 @@ class MyQLMDigitalQPU(Core):
 
     def postprocess(self, input_data: any) -> Result:
         """
-        return Data(ProbabilityDistribution)
+        return Data(SampleDistribution)
         """
         # framework will probably be changed to use the preprocess output as postprocess input for leaf modules.
         if input_data is None:
@@ -93,9 +93,7 @@ class MyQLMDigitalQPU(Core):
         else:
             assert isinstance(job, Job )
         result = self.getQPU().submit(self.job)
-        if result.has_statevector:
-            return Data(SampleDistribution.from_statevector(result.statevector, self.nbqbits))
-
         return Data(
-            SampleDistribution.from_list([(sample.state.bitstring, sample.probability) for sample in result])
+            SampleDistribution.from_list([(sample.state.bitstring, sample.probability) for sample in result],
+                                         nbshots = 0 if self.nbshots is None else self.nbshots)
         )
