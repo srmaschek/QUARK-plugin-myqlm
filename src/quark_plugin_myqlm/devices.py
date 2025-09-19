@@ -79,6 +79,7 @@ class MyQLMDigitalQPU(Core):
                 nbshots=self.nbshots, job_type="SAMPLE") if self.nbshots is not None else circ.to_job()
         else:
             raise NotImplementedError
+        self.nbqbits = circ.nbqbits
         self.job = job
         return Data(Other(job))
 
@@ -93,7 +94,7 @@ class MyQLMDigitalQPU(Core):
             assert isinstance(job, Job )
         result = self.getQPU().submit(self.job)
         if result.has_statevector:
-            return Data(SampleDistribution.from_statevector(result.statevector))
+            return Data(SampleDistribution.from_statevector(result.statevector, self.nbqbits))
 
         return Data(
             SampleDistribution.from_list([(sample.state.bitstring, sample.probability) for sample in result])
