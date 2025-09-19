@@ -1,11 +1,7 @@
 # QUARK-plugin-myqlm
 
-A valid quark plugin must provide at least one module.
-Each module must be a subclass of quark's abstract `Core` class, and must implement the necessary `preprocess` and `postprocess` methods.
+This QUARK-plugin provides access to myQLM (https://myqlm.github.io/) functionalities.
 
-This template provides a starting point for creating a QUARK plugin in the recommended structure.
-It exposes a single module `ExampleModule` compatible with `QUARK-framework`, missing the necessary implementation of the `preprocess` and `postprocess` functions.
-The first steps after creating a new plugin from this template are fixing all TODOs, renaming `ExampleModule` to something more descriptive, and adapting the `pyproject.toml` file to your needs.
+Access to the myQLM QPU simulators is provided via the QUARK-module "MyQLMDigitalQPU".
 
-This template includes a GitHub action that prepares the newly created plugin for use with quark by exchanging some placeholders like `QUARK-plugin-myqlm`, based on the name you have given your plugin.
-This process runs automatically and only takes a few seconds, but you should wait for the action to complete before using the plugin, and pull the changes afterwards.
+As an example application you can use the GHZ module from QUARK-plugin-ghz with the mapping "GHZtoQaptivaCircuit". A corresponding QUARK-configuration is given in src/demo/ghz_cfg.yml.
