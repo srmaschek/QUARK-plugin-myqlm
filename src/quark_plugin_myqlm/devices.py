@@ -29,6 +29,7 @@ from quark.interface_types import Other, SampleDistribution, Circuit
 from qat.core import Circuit as QaptivaCircuit
 from qat.core import Job
 from qat.qpus import get_default_qpu
+from qat.interop.openqasm import OqasmParser
 
 @dataclass
 class MyQLMDigitalQPU(Core):
@@ -66,7 +67,6 @@ class MyQLMDigitalQPU(Core):
             circ: QaptivaCircuit = data.data
             job = circ.to_job(nbshots=self.nbshots) if self.nbshots is not None else circ.to_job()
         elif isinstance(data, Circuit):
-            from qat.interop.openqasm import OqasmParser
             parser = OqasmParser()
             adapted_circ = data.as_qasm_string().replace(
                 "qubit", "qreg").replace("bit", "creg")
