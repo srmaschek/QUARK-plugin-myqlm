@@ -56,7 +56,7 @@ class MyQLMDigitalQPU(Core):
         module = importlib.__import__(module_name, fromlist=(self.qpu_class_name,))
         return getattr(module, self.qpu_class_name)()
 
-    def preprocess(self, data: Other[QaptivaCircuit]) -> Result:
+    def preprocess(self, data: Circuit|Other[QaptivaCircuit]) -> Result:
         """
         Executes the given circuit on the selected myQLM QPU.
         return Data(Other(qat.core.Job))
@@ -74,7 +74,7 @@ class MyQLMDigitalQPU(Core):
             job = circ.to_job(
                 nbshots=self.nbshots, job_type="SAMPLE") if self.nbshots is not None else circ.to_job()
         else:
-            raise NotImplementedError
+            raise ValueError(f"unsupported type {type(data)}")
         self.nbqbits = circ.nbqbits
         self.job = job
         return Data(Other(job))
