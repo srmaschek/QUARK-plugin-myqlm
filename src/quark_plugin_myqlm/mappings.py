@@ -28,9 +28,14 @@ from qat.lang.AQASM import Program, H, CNOT
 
 @dataclass
 class GHZtoQaptivaCircuit(Core):
+    """
+    Creates a Qaptiva circuit for GHZ state praparation as specified by the QUARK
+    module GHZ (QUARK-plugin-ghz).
+    """
 
-    def preprocess(self, data):
+    def preprocess(self, data: Other[dict]) -> Result:
         problem:dict = data.data
+        assert isinstance(problem, dict)
         my_program = Program()
         qbits_reg = my_program.qalloc(problem.get("size"))
         H(qbits_reg[0])
@@ -39,6 +44,6 @@ class GHZtoQaptivaCircuit(Core):
         circ = my_program.to_circ()
         return Data(Other(circ))
     
-    def postprocess(self, data: SampleDistribution):
+    def postprocess(self, data: SampleDistribution) -> Result:
         assert isinstance(data, SampleDistribution)
         return Data(data)
