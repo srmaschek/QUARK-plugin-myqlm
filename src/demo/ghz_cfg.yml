@@ -4,7 +4,7 @@ nbshots: &nbshots 5000
 
 pipeline: [
   ["GHZ": {"size": 3},"GHZ": {"size": 10}],
-  ["GHZtoQaptivaCircuit","QasmGHZCircuit"],
+  ["GHZtoQaptivaCircuit","GHZtoQasmCircuit"],
   ["MyQLMDigitalQPU": {"nbshots": *nbshots},
    "MyQLMDigitalQPU": {"nbshots": 0},
    "MyQLMDigitalQPU": {},
