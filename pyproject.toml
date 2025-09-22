@@ -18,4 +18,4 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 license = "Apache-2.0"
-dependencies = ["quark-framework>=0.3.7", "myqlm>=1.11.3", "myqlm-interop>=1.10.0"]
+dependencies = ["quark-framework>=0.3.7", "QUARK-plugin-ghz", "myqlm>=1.11.3", "myqlm-interop>=1.10.0"]
