@@ -22,6 +22,7 @@
 
 from dataclasses import dataclass
 import importlib
+import logging
 
 from quark.core import Core, Result, Data
 from quark.interface_types import Other, SampleDistribution, Circuit
@@ -68,9 +69,14 @@ class MyQLMDigitalQPU(Core):
             job = circ.to_job(nbshots=self.nbshots) if self.nbshots is not None else circ.to_job()
         elif isinstance(data, Circuit):
             parser = OqasmParser()
-            adapted_circ = data.as_qasm_string().replace(
-                "qubit", "qreg").replace("bit", "creg")
-            circ = parser.compile(adapted_circ)
+            version = data.qasm_version
+            qasm_string = data.as_qasm_string()
+            if version is not None and version.split(".")[0] == '3':
+                logging.warning("Found QASM version 3. Provisional conversion to version 2 is done")
+                # TODO: check for qasm 3 support in myQLM 
+                qasm_string = qasm_string.replace(
+                    "qubit", "qreg").replace("bit", "creg")
+            circ = parser.compile(qasm_string)
             job = circ.to_job(
                 nbshots=self.nbshots, job_type="SAMPLE") if self.nbshots is not None else circ.to_job()
         else:
